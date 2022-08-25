@@ -1,11 +1,58 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link> |
-    <router-link to="/core/documentation">Documentation</router-link>
-  </nav>
-  <router-view/>
+  <div>
+    <nav>
+      <router-link to="/">Home</router-link> |
+      <router-link to="/login">Login</router-link> |
+      <router-link to="/core/documentation">Documentation</router-link>
+    </nav>
+    <div v-if="tabs">
+      <tabs-component :tabs="tabs"></tabs-component>
+    </div>
+    <router-view/>
+  </div>
 </template>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
+import { TabModel } from './components/core/TabModel';
+import TabsComponent from './components/core/TabsComponent.vue';
+
+export default defineComponent({
+  name: 'app-component',
+  components: { TabsComponent },
+  data() : {tabs: TabModel[]} {
+    console.log('data');
+    return {
+      tabs: [
+        {
+          name: 'Bingo',
+          action: () => {
+            console.log('go to Bingo');
+            this.$router.push('/');
+          },
+        },
+        {
+          name: 'Propals',
+          action: () => {
+            console.log('go to Propals');
+            this.$router.push('/login');
+          },
+        },
+        {
+          name: 'Stats',
+          action: () => {
+            console.log('go to Stats');
+            this.$router.push('/login');
+          },
+        },
+      ],
+    };
+  },
+  mounted() {
+    console.log('mounted');
+  },
+});
+</script>
 
 <style lang="scss">
 

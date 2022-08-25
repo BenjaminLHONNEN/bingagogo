@@ -31,7 +31,7 @@
         <div>
           <h5> Tabs </h5>
           <div>
-            <tabs-component></tabs-component>
+            <tabs-component :tabs="tabs"></tabs-component>
           </div>
         </div>
     </div>
@@ -42,9 +42,37 @@ import ImageCollectionComponent from '@/components/core/ImageCollectionComponent
 import TabsComponent from '@/components/core/TabsComponent.vue';
 import { defineComponent } from 'vue';
 
+import { TabModel } from '../../components/core/TabModel';
+
 export default defineComponent({
   components: { ImageCollectionComponent, TabsComponent },
   name: 'DocumentationView',
+  data() : {
+    tabs: TabModel[]
+    } {
+    return {
+      tabs: [
+        {
+          name: 'Tab 1',
+          action: () => {
+            console.log('click Tab 1');
+          },
+        },
+        {
+          name: 'Tab 2',
+          action: () => {
+            console.log('click Tab 2');
+          },
+        },
+        {
+          name: 'Tab 3',
+          action: () => {
+            console.log('click Tab 3');
+          },
+        },
+      ],
+    };
+  },
 });
 </script>
 

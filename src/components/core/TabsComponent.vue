@@ -5,41 +5,39 @@
       <div class="left-selector" ref="leftSelector"></div>
       <div class="right-selector" ref="rightSelector"></div>
       <div class="tab-c f" ref="tab">
-        <div @click="updateSelectorPosition(0)"
-          @keypress="updateSelectorPosition(0)"
-          class="f1 tab-item">Tab1</div>
-        <div @click="updateSelectorPosition(1)"
-          @keypress="updateSelectorPosition(1)"
-          class="f1 tab-item">Tab2</div>
-        <div @click="updateSelectorPosition(2)"
-          @keypress="updateSelectorPosition(2)"
-          class="f1 tab-item">Tab3</div>
-        <div @click="updateSelectorPosition(3)"
-          @keypress="updateSelectorPosition(3)"
-          class="f1 tab-item">Tab4</div>
-        <div @click="updateSelectorPosition(4)"
-          @keypress="updateSelectorPosition(4)"
-          class="f1 tab-item">Tab5</div>
+        <div v-for="(tab, index) in tabs" :key="index"
+        @click="updateSelectorPosition(index, tab)"
+          @keypress="updateSelectorPosition(index, tab)"
+          class="f1 tab-item"> {{tab.name}} </div>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, PropType } from 'vue';
+import { TabModel } from './TabModel';
 
 export default defineComponent({
   name: 'tabs-component',
   data() {
     return {
       lastSelectedElement: null as unknown as HTMLElement,
+      firstInit: true,
     };
   },
   mounted() {
-    this.updateSelectorPosition(0);
+    console.log('mounted');
+    this.updateSelectorPosition(0, this.tabs[0]);
+  },
+  props: {
+    tabs: {
+      type: Array as PropType<TabModel[]>,
+      default: () => [],
+    },
   },
   methods: {
-    updateSelectorPosition(index: number) {
+    updateSelectorPosition(index: number, tab: TabModel) {
       const tabWidth = (this.$refs.tab as HTMLDivElement).getBoundingClientRect().width;
       const selectedElement = ((this.$refs.tab as HTMLDivElement)
         .children[index] as HTMLElement);
@@ -52,10 +50,6 @@ export default defineComponent({
           leftSumWidth += (value as HTMLElement).getBoundingClientRect().width;
         });
 
-      console.log(tabWidth);
-      console.log(elementWidth);
-      console.log(leftSumWidth);
-
       const leftSelector = (this.$refs.leftSelector as HTMLDivElement);
       const rightSelector = (this.$refs.rightSelector as HTMLDivElement);
 
@@ -63,11 +57,17 @@ export default defineComponent({
       rightSelector.style.left = `${(leftSumWidth + elementWidth)}px`;
 
       selectedElement.classList.add('active');
-      if (this.lastSelectedElement) {
+      if (this.lastSelectedElement && this.lastSelectedElement !== selectedElement) {
         this.lastSelectedElement.classList.remove('active');
       }
 
       this.lastSelectedElement = selectedElement;
+
+      if (this.firstInit) {
+        this.firstInit = false;
+      } else {
+        tab.action();
+      }
     },
   },
 });
@@ -100,9 +100,37 @@ export default defineComponent({
     }
     .left-selector {
       border-top-right-radius: 10px;
+
+      &::before {
+        content: '';
+        position: absolute;
+        background-clip: padding-box;
+        border-bottom: solid 15px transparent;
+        box-shadow: -10px 1px 0 0 white;
+        border-bottom-left-radius: 15px;
+        border-bottom-right-radius: 15px;
+        bottom: -1px;
+        right: -20px;
+        width: 20px;
+        animation: fade 0.3s ease-out;
+      }
     }
     .right-selector {
       border-top-left-radius: 10px;
+
+      &::after {
+        content: '';
+        position: absolute;
+        background-clip: padding-box;
+        border-bottom: solid 15px transparent;
+        box-shadow: 10px 1px 0 0 white;
+        border-bottom-left-radius: 15px;
+        border-bottom-right-radius: 15px;
+        bottom: -1px;
+        left: -20px;
+        width: 20px;
+        animation: fade 0.3s ease-out;
+      }
     }
   }
 
@@ -115,8 +143,7 @@ export default defineComponent({
       transition: color ease-in-out 0.3s;
       &.active{
         color: white;
-        border-bottom-left-radius: 10px;
-        border-bottom-right-radius: 10px;
+        position: relative;
       }
     }
   }

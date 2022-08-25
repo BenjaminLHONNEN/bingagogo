@@ -7,6 +7,8 @@ module.exports = defineConfig({
       sass: {
         additionalData: `
         @import "@/css/colors.scss";
+        @import "@/css/animation.scss";
+        @import "@/css/button.scss";
         `,
       },
     },
